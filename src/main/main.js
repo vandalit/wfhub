@@ -1,6 +1,6 @@
-const { app, BrowserWindow } = require("electron");
-const path = require("path");
-const isDev = process.env.NODE_ENV !== "production";
+const { app, BrowserWindow } = require('electron');
+const path = require('path');
+const isDev = process.env.NODE_ENV !== 'production';
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -8,23 +8,25 @@ function createWindow() {
     height: 600,
     frame: false,
     transparent: true,
-    alwaysOnTop: true,
+    backgroundColor: '#00ffffff', // Completamente transparente
+    hasShadow: false,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      enableRemoteModule: true,
-    },
+      enableRemoteModule: true
+    }
   });
 
-  // En desarrollo o producción, cargar el archivo dist/index.html
-  mainWindow.loadFile(path.join(__dirname, "../../dist/index.html"));
-
+  // En desarrollo, usa el servidor de desarrollo
   if (isDev) {
-    mainWindow.webContents.openDevTools();
+    mainWindow.loadURL('http://localhost:5173');
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
+  } else {
+    mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
   }
 
-  // Posicionar la ventana en la esquina superior derecha
-  const { screen } = require("electron");
+  // Posicionar la ventana
+  const { screen } = require('electron');
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width } = primaryDisplay.workAreaSize;
   mainWindow.setPosition(width - 600, 0);
@@ -32,13 +34,13 @@ function createWindow() {
 
 app.whenReady().then(createWindow);
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
-app.on("activate", () => {
+app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
